@@ -1,7 +1,26 @@
 package p2p
 
-type Handler struct{}
+import (
+	"fmt"
+	"io"
+)
 
-func NewHandler() *Handler {
-	return &Handler{}
+type Handler interface {
+	HandleMessage(*Message) error
+}
+
+type DefaultHandler struct{}
+
+func NewDefaultHandler() *DefaultHandler {
+	return &DefaultHandler{}
+}
+
+func (h *DefaultHandler) HandleMessage(msg *Message) error {
+	b, err := io.ReadAll(msg.Payload)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("handling the msg from %s: %s", msg.From, string(b))
+	return nil
 }

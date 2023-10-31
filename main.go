@@ -1,17 +1,26 @@
 package main
 
-import "github.com/NikhilSharmaWe/go-poker/p2p"
+import (
+	"github.com/NikhilSharmaWe/go-poker/p2p"
+)
 
 func main() {
-	// rand.Seed(time.Now().UnixNano())
-	// d := deck.New()
-	// fmt.Println(d)
-
 	cfg := p2p.ServerConfig{
+		Version:    "GGPOKER V0.1-alpha",
 		ListenAddr: ":3000",
 	}
+	server := p2p.NewServer(cfg)
+	go server.Start()
 
-	s := p2p.NewServer(cfg)
+	remoteCfg := p2p.ServerConfig{
+		Version:    "GGPOKER V0.1-alpha",
+		ListenAddr: ":4000",
+	}
+	remoteServer := p2p.NewServer(remoteCfg)
+	go remoteServer.Start()
+	if err := remoteServer.Connect("localhost:3000"); err != nil {
+		panic(err)
+	}
 
-	s.Start()
+	select {}
 }
